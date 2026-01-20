@@ -1,0 +1,79 @@
+# Maintainer: Your Name <your.email@example.com>
+pkgname=myopsida
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Update Cloudflare DNS records with current public IP via systemd timer"
+arch=('x86_64' 'aarch64' 'armv7h')
+url="https://github.com/yi-fan-song/myopsida"
+license=('custom')
+depends=('glibc')
+makedepends=('go' 'git')
+backup=('etc/myopsida/config.env')
+options=('!lto')
+
+source=("git+https://github.com/yi-fan-song/myopsida.git")
+sha256sums=('SKIP')
+
+build() {
+	cd "$pkgname"
+	go build -v -trimpath -ldflags="-s -w" -o build/myopsida .
+}
+
+package() {
+	cd "$pkgname"
+
+	# Install binary
+	install -Dm755 build/myopsida "$pkgdir/usr/local/bin/myopsida"
+
+	# Install systemd service and timer
+	install -Dm644 systemd/myopsida.service "$pkgdir/usr/lib/systemd/system/myopsida.service"
+	install -Dm644 systemd/myopsida.timer "$pkgdir/usr/lib/systemd/system/myopsida.timer"
+
+	# Install documentation
+	install -Dm644 README.md "$pkgdir/usr/share/doc/myopsida/README.md"
+	install -Dm644 LICENSE "$pkgdir/usr/share/licenses/myopsida/LICENSE"
+
+	# Install config file (backed up by pacman)
+	install -Dm644 example.env "$pkgdir/etc/myopsida/config.env"
+}
+
+post_install() {
+	cat << 'EOF'
+
+==> myopsida installed successfully!
+
+Configuration file created at /etc/myopsida/config.env
+
+To set up the systemd timer:
+
+1. Edit your configuration file with Cloudflare credentials:
+   sudo nano /etc/myopsida/config.env
+
+   You need to fill in:
+   - CF_API_TOKEN: Your Cloudflare API token
+   - CF_ZONE_ID: Your domain's zone ID
+   - CF_RECORD_ID_V4: DNS record ID for A record (IPv4)
+   - CF_RECORD_ID_V6: DNS record ID for AAAA record (IPv6)
+   - CF_RECORD_NAME: Your domain name (e.g., example.com)
+
+2. Reload systemd and enable the timer:
+   sudo systemctl daemon-reload
+   sudo systemctl enable myopsida.timer
+   sudo systemctl start myopsida.timer
+
+3. Check the timer status:
+   sudo systemctl status myopsida.timer
+   sudo systemctl list-timers myopsida.timer
+
+4. View logs:
+   sudo journalctl -u myopsida.service -f
+
+For more information, see /usr/share/doc/myopsida/README.md or run:
+   man myopsida
+
+EOF
+}
+
+post_upgrade() {
+	post_install
+}

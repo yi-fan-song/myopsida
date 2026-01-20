@@ -1,0 +1,11 @@
+[Unit]
+Description=Update Cloudflare DNS records every 30 minutes
+Requires=myopsida.service
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=30min
+Persistent=true
+
+[Install]
+WantedBy=timers.target
