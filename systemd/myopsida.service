@@ -12,7 +12,7 @@ ExecStart=/usr/local/bin/myopsida \
   -record-id-v6 ${CF_RECORD_ID_V6} \
   -name ${CF_RECORD_NAME} \
   -ttl ${CF_TTL} \
-  -proxied ${CF_PROXIED} \
+  -proxied=${CF_PROXIED} \
   -comment ${CF_COMMENT}
 StandardOutput=journal
 StandardError=journal
