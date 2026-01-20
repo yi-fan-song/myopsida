@@ -1,6 +1,6 @@
 # Maintainer: Yi Fan Song <yfsong00@gmail.com>
 pkgname=myopsida
-pkgver=1.0.1
+pkgver=1.0.2
 pkgrel=1
 pkgdesc="Update Cloudflare DNS records with current public IP via systemd timer"
 arch=('x86_64' 'aarch64' 'armv7h')

@@ -10,7 +10,10 @@ ExecStart=/usr/local/bin/myopsida \
   -zone-id ${CF_ZONE_ID} \
   -record-id-v4 ${CF_RECORD_ID_V4} \
   -record-id-v6 ${CF_RECORD_ID_V6} \
-  -name ${CF_RECORD_NAME}
+  -name ${CF_RECORD_NAME} \
+  -ttl ${CF_TTL} \
+  -proxied ${CF_PROXIED} \
+  -comment ${CF_COMMENT}
 StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=myopsida
